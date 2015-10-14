@@ -2,13 +2,12 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var passport = require('passport');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var passport = require('passport');
 var api = require('./routes/api');
-//var authenticate = require('./routes/authenticate');
-
+var authenticate = require('./routes/authenticate')(passport);
 
 var app = express();
 
@@ -27,8 +26,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/api', api);
-//app.use('/authe', authenticate);
+app.use('/auth', authenticate);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -36,6 +38,10 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+//Initialize passport
+var initPassport = require('./passport-init');
+initPassport(passport);
 
 // error handlers
 

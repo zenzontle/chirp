@@ -1,6 +1,20 @@
 var express = require('express');
 var router = express.Router();
 
+router.use(function(req, res, next) {
+	if (req.method === "GET") {
+		//continue to the next middleware or request handler
+		return next();
+	}
+
+	if (!req.isAuthenticated()) {
+		// user not authenticated, redirect to Login page
+		return res.redirect('/#login');
+	}
+
+	//user authenticated continue to next middleware or handler
+	return next();
+});
 router.route('/posts')
 
 //return all posts
