@@ -8,6 +8,10 @@ var session = require('express-session');
 var passport = require('passport');
 var api = require('./routes/api');
 var authenticate = require('./routes/authenticate')(passport);
+var mongoose = require('mongoose');
+
+//connect to MongoDB
+mongoose.connect("mongodb://localhost/chirp-test");
 
 var app = express();
 
@@ -38,6 +42,9 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+//Initialize models
+require('./models/models.js')
 
 //Initialize passport
 var initPassport = require('./passport-init');
