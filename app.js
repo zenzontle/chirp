@@ -6,6 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
+
+//Initialize models
+require('./models/models.js')
+
 var api = require('./routes/api');
 var authenticate = require('./routes/authenticate')(passport);
 var mongoose = require('mongoose');
@@ -42,9 +46,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
-//Initialize models
-require('./models/models.js')
 
 //Initialize passport
 var initPassport = require('./passport-init');
