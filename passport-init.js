@@ -14,18 +14,16 @@ module.exports = function(passport) {
 
 	passport.deserializeUser(function(id, done) {
 		console.log('deserializing user:', id);
-
 		User.findById(id, function(err, user) {
 			if (err) {
 				return done(err, false);
 			}
-
 			if (!user) {
-				return done('user not found', false);
+				return done('User not found', false);
 			}
 
 			//we found the user object provide it back to passport
-			return done(user, true);
+			return done(err, user);
 		});
 	});
 
@@ -34,19 +32,17 @@ module.exports = function(passport) {
 	},
 	function(req, username, password, done) {
 
-		User.findOne({username: username}, function(err, user) {
+		User.findOne({'username': username}, function(err, user) {
 			if (err) {
-				return done(err, false);
+				return done(err), false;
 			}
-
 			if (!user) {
 				console.log('User not found with username: ' + username);
-				return done('User not found with username: ' + username, false);
+				return done('user not found', false);
 			}
-
 			if (!isValidPassword(user, password)) {
 				console.log('Invalid password ' + username);
-				return done('Invalid password ' + username, false);
+				return done('Invalid password', false);
 			}
 
 			//successfully signed in
@@ -60,7 +56,7 @@ module.exports = function(passport) {
 	},
 	function(req, username, password, done) {
 
-		User.findOne({ 'username' : username }, function(err, user) {
+		User.findOne({'username': username }, function(err, user) {
 			if (err) {
 				console.log('Error in SignUp: ' + err);
 				return done(err, false);
@@ -69,13 +65,14 @@ module.exports = function(passport) {
 			if (user) {
 				//we have already signed this user up
 				console.log('Username already taken ' + username);
-				return done('Username already taken', false);
+				return done(null, false);
 			} else {
 				console.log('Creating new user ' + username);
 
 				var newUser = new User();
 				newUser.username = username;
 				newUser.password = createHash(password);
+
 				newUser.save(function(err) {
 					if (err) {
 						console.log('Error in Saving user:' + err);
